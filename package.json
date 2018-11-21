@@ -1,0 +1,20 @@
+{
+  "name": "hazy-api",
+  "version": "0.0.1",
+  "description": "Hazy api",
+  "main": "index.js",
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon index.js",
+    "start": "NODE_ENV=production node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nainemom <nainemom@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.3.13",
+    "nodemon": "^1.18.6"
+  }
+}
