@@ -6,6 +6,7 @@ const authModel = require(path.resolve(__rootdir, './schema/post-auth.modela.js'
 
 module.exports = {
   post: [
+    auth.recaptcha,
     async (req, res, next) => {
       const model = new Modela(authModel)
       model.$set(req.body).$clean()

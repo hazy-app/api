@@ -2,7 +2,9 @@
 global.PORT = process.env.PORT ? parseInt(process.env.PORT) : 3002
 global.MONGO_URI = process.env.MONGO_URI
 global.BCRYPT_SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS ? parseInt(process.env.BCRYPT_SALT_ROUNDS) : 12
-global.JWT_SECRET = process.env.JWT_SECRET ? parseInt(process.env.JWT_SECRET) : '1234'
+global.JWT_SECRET = process.env.JWT_SECRET
+global.RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY
+global.RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY
 
 /// MODULES
 global.__rootdir = __dirname
