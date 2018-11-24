@@ -15,7 +15,7 @@ module.exports = {
     next()
   }, async (req, res) => {
     const page = req.query.page ? parseInt(req.query.page) : 1
-    const per_page = 30
+    const per_page = req.query.per_page ? parseInt(req.query.per_page) : 10
     const data = await database.getTable('messages').get({
       receiver: req.params.username
     }, (page * per_page) - per_page, per_page, '-create_date')
@@ -23,37 +23,7 @@ module.exports = {
   }],
 
   post: [
-    auth.basic,
     async (req, res, next) => {
-      const model = new Modela(messageModel)
-      model.$set(req.body).$clean()
-      const check = model.$check()
-      if (!check.result) {
-        return res.status(400).send(Object.assign(check, {
-          message: 'Bad request'
-        }))
-      }
-      req.body = model.$export()
-      next()
-    },
-    async (req, res, next) => {
-      const sender = await database.getTable('users').getOne({
-        username: req.parsedToken.username
-      })
-      if (!sender) {
-        return res.status(404).send({
-          message: 'User not found'
-        })
-      }
-      const check = bcrypt.compareSync(req.body.password, sender.password)
-      if (!check) {
-        return res.status(401).send({
-          result: false,
-          message: 'Wrong password'
-        })
-      }
-      next()
-    }, async (req, res, next) => {
       const receiver = await database.getTable('users').getOne({
         username: req.params.username
       })
