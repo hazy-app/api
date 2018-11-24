@@ -1,9 +1,10 @@
 // ENVS
-const PORT = process.env.PORT || 3002
-const MONGO_URI = process.env.MONGO_URI
+global.PORT = process.env.PORT ? parseInt(process.env.PORT) : 3002
+global.MONGO_URI = process.env.MONGO_URI
+global.BCRYPT_SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS ? parseInt(process.env.BCRYPT_SALT_ROUNDS) : 12
+global.JWT_SECRET = process.env.JWT_SECRET ? parseInt(process.env.JWT_SECRET) : '1234'
 
 /// MODULES
-const path = require('path')
 global.__rootdir = __dirname
 const express = require('express')
 const routes = require('./lib/routes.js')
@@ -13,12 +14,11 @@ global.database = new Database()
 
 // APP
 const init = async () => {
-  const dbmsg = await database.connect(MONGO_URI)
-  console.log(dbmsg)
-  database.setTable('users', require('./schema/users.js'))
-  database.setTable('messages', require('./schema/messages.js'))
+  await database.connect(MONGO_URI)
+  database.setTable('users', require('./schema/users.mongo.js'))
+  database.setTable('messages', require('./schema/messages.mongo.js'))
   const server = express()
-  routes.use(...middlewares)
+  server.use(...middlewares)
   server.use(routes)
   server.get('/ping', (req, res) => res.send('pong'))
   server.listen(PORT, () => {
