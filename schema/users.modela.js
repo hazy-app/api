@@ -1,6 +1,7 @@
 module.exports = {
   username: {
-    type: ['string']
+    type: ['string'],
+    validator: (v) => /^[a-zA-Z0-9\_\-]+$/.test(v)
   },
   password: {
     type: ['string'],
