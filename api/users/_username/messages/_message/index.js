@@ -8,7 +8,7 @@ module.exports = {
   delete: [
     auth.basic,
     async (req, res, next) => {
-      if (req.parsedToken.username !== req.params.username) {
+      if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         return res.status(403).send({
           message: 'You dont have an access to delete this message'
         })        

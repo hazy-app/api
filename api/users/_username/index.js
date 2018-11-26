@@ -1,7 +1,7 @@
 module.exports = {
   get: async (req, res) => {
     const data = await database.getTable('users').getOne({
-      username: req.params.username
+      username: req.params.username.toLowerCase()
     })
 
     if (!data) {
