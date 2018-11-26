@@ -1,7 +1,8 @@
 module.exports = {
   username: {
     type: ['string'],
-    validator: (v) => /^[a-zA-Z0-9\_\-]+$/.test(v)
+    validator: (v) => /^[a-zA-Z0-9\_\-]+$/.test(v),
+    formatter: (v) => v ? v.toLowerCase() : ''
   },
   password: {
     type: ['string'],
