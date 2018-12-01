@@ -1,7 +1,7 @@
 const Modela = require('modela')
 const path = require('path')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const messageModel = require(path.resolve(__rootdir, './schema/post-message.modela.js'))
 
 module.exports = {

@@ -1,7 +1,7 @@
 const path = require('path')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
 const Modela = require('modela')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const userModel = require(path.resolve(__rootdir, './schema/users.modela.js'))
 
 module.exports = {

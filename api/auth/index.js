@@ -1,6 +1,6 @@
 const path = require('path')
 const Modela = require('modela')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
 const authModel = require(path.resolve(__rootdir, './schema/post-auth.modela.js'))
 
