@@ -3,8 +3,8 @@ name: hazy-api
 spec:
   image: hazy-api:${IMAGE_VERSION}
   port: 3002
-domains:
-  name: api.hazyapp.com
+  domains:
+    - name: api.hazyapp.com
 env:
   - name: NODE_ENV
     value: production
