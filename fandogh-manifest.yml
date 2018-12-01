@@ -1,0 +1,28 @@
+kind: ExternalService
+name: hazy-api
+spec:
+  image: hazy-api:${IMAGE_VERSION}
+  port: 3002
+  domains:
+    - name: api.hazyapp.com
+env:
+  - name: NODE_ENV
+    value: production
+  - name: HOST
+    value: 0.0.0.0
+  - name: RECAPTCHA_SITE_KEY
+    value: 6Lfj3HwUAAAAAGKohyJRasw6EsMoQGu2i0dOw1Ti
+  - name: PORT
+    value: 3002
+  - name: BCRYPT_SALT_ROUNDS
+    value: 12
+    hidden: true
+  - name: MONGO_URI
+    value: ${MONGO_URI}
+    hidden: true
+  - name: JWT_SECRET
+    value: ${JWT_SECRET}
+    hidden: true
+  - name: RECAPTCHA_SECRET_KEY
+    value: ${RECAPTCHA_SECRET_KEY}
+    hidden: true
