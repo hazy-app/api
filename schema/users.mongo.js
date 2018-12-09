@@ -12,6 +12,10 @@ module.exports = {
   password_hint: {
     type: String
   },
+  fcmTokens: {
+    type: Array,
+    default: []
+  },
   create_date: {
     type: Date
   }

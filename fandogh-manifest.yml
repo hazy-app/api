@@ -26,3 +26,6 @@ spec:
     - name: RECAPTCHA_SECRET_KEY
       value: ${RECAPTCHA_SECRET_KEY}
       hidden: true
+    - name: FIREBASE_SERVER_KEY
+      value: ${FIREBASE_SERVER_KEY}
+      hidden: true

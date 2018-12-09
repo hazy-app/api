@@ -17,9 +17,10 @@ module.exports = {
     }, async (req, res) => {
       const page = req.query.page ? parseInt(req.query.page) : 1
       const per_page = req.query.per_page ? parseInt(req.query.per_page) : 10
-      const data = await database.getTable('messages').get({
+      const searchQuery = {
         receiver: req.params.username.toLowerCase()
-      }, (page * per_page) - per_page, per_page, '-create_date')
+      }
+      const data = await database.getTable('messages').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
       res.send(data)
     }
   ],
@@ -35,6 +36,7 @@ module.exports = {
           message: 'User not found'
         })
       }
+      req.receiver = receiver
       next()
     }, async (req, res) => {
       try {
@@ -44,6 +46,29 @@ module.exports = {
           create_date: new Date()
         })
         res.send(data)
+
+        // Send push notification to receiver
+        if (req.receiver.fcmTokens && req.receiver.fcmTokens.length) {
+          push.send(req.receiver.fcmTokens, data).then(badTokens => {
+            if (!badTokens.length) {
+              return
+            }
+            // Delete invalid or expired tokens from database
+            database.getTable('users').model.update(
+              {
+                username: req.params.username.toLowerCase()
+              }, 
+              {
+                $pullAll: {
+                  fcmTokens: badTokens
+                }
+              },
+              { multi: false },
+              err => {}
+            )
+          })
+          
+        }
       } catch (e) {
         console.log(e)
         res.status(500).send('500')
