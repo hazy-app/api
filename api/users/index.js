@@ -30,9 +30,9 @@ module.exports = {
       } catch (e) {
         res.status(400).send({
           result: false,
-          message: 'Username cannot be dublicate',
+          message: 'Username cannot be duplicate',
           errors: {
-            username: 'Username cannot be dublicate.'
+            username: 'Username cannot be duplicate.'
           }
         })
       }
