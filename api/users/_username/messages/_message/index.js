@@ -7,19 +7,16 @@ const messageModel = require(path.resolve(__rootdir, './schema/post-message.mode
 module.exports = {
   get: [
     async (req, res) => {
-      try {
-        const message = await database.getTable('messages').getOne({
-          _id: req.params.message
-        })
-        if (message.receiver.toLowerCase() !== req.params.username.toLowerCase()) {
-          throw 404
-        }
-        res.status(200).send(message)
-      } catch (e) {
+      const message = await database.getTable('messages').getOne({
+        _id: req.params.message,
+        receiver: req.params.username.toLowerCase()
+      })
+      if (!message) {
         return res.status(404).send({
           message: 'Message not found.'
-        })  
+        })
       }
+      res.status(200).send(message)
     }
   ],
   delete: [
@@ -27,8 +24,19 @@ module.exports = {
     async (req, res, next) => {
       if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         return res.status(403).send({
-          message: 'You dont have an access to delete this message'
+          message: 'You dont have an access to do this job.'
         })        
+      }
+      next()
+    }, async (req, res, next) => {
+      const message = await database.getTable('messages').getOne({
+        _id: req.params.message,
+        receiver: req.params.username.toLowerCase()
+      })
+      if (!message) {
+        return res.status(404).send({
+          message: 'Message not found.'
+        })
       }
       next()
     }, async (req, res) => {
@@ -41,6 +49,48 @@ module.exports = {
         return res.status(404).send({
           message: 'Message not found.'
         })  
+      }
+    }
+  ],
+  put: [
+    auth.recaptcha,
+    auth.basic,
+    async (req, res, next) => {
+      if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
+        return res.status(403).send({
+          message: 'You dont have an access to do this job.'
+        })        
+      }
+      next()
+    }, async (req, res, next) => {
+      const message = await database.getTable('messages').getOne({
+        _id: req.params.message,
+        receiver: req.params.username.toLowerCase()
+      })
+      if (!message) {
+        return res.status(404).send({
+          message: 'Message not found.'
+        })
+      }
+      next()
+    },
+    async (req, res) => {
+      try {
+        const data = await database.getTable('messages').model.update(
+          {
+            _id: req.params.message.toLowerCase()
+          }, 
+          {
+            reply: req.body.reply,
+            reply_date: new Date()
+          },
+          { multi: false }
+        )
+
+        res.send(data)
+      } catch (e) {
+        console.log(e)
+        res.status(500).send('500')
       }
     }
   ]
