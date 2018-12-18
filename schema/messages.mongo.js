@@ -7,7 +7,13 @@ module.exports = {
     type: String,
     required: true
   },
+  reply: {
+    type: String
+  },
   create_date: {
+    type: Date
+  },
+  reply_date: {
     type: Date
   }
 }

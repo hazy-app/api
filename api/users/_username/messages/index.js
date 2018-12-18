@@ -43,6 +43,8 @@ module.exports = {
         const data = await database.getTable('messages').save({
           receiver: req.params.username.toLowerCase(),
           text: req.body.text,
+          reply: null,
+          reply_date: null,
           create_date: new Date()
         })
         res.send(data)
