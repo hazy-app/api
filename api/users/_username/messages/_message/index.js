@@ -8,7 +8,7 @@ module.exports = {
   get: [
     async (req, res) => {
       const message = await database.getTable('messages').getOne({
-        _id: req.params.message,
+        uuid: req.params.message,
         receiver: req.params.username.toLowerCase()
       })
       if (!message) {
@@ -30,7 +30,7 @@ module.exports = {
       next()
     }, async (req, res, next) => {
       const message = await database.getTable('messages').getOne({
-        _id: req.params.message,
+        uuid: req.params.message,
         receiver: req.params.username.toLowerCase()
       })
       if (!message) {
@@ -42,7 +42,7 @@ module.exports = {
     }, async (req, res) => {
       try {
         await database.getTable('messages').remove({
-          _id: req.params.message
+          uuid: req.params.message
         })
         res.status(204).send()
       } catch (e) {
@@ -64,7 +64,7 @@ module.exports = {
       next()
     }, async (req, res, next) => {
       const message = await database.getTable('messages').getOne({
-        _id: req.params.message,
+        uuid: req.params.message,
         receiver: req.params.username.toLowerCase()
       })
       if (!message) {
@@ -78,7 +78,7 @@ module.exports = {
       try {
         const data = await database.getTable('messages').model.update(
           {
-            _id: req.params.message.toLowerCase()
+            uuid: req.params.message.toLowerCase()
           }, 
           {
             reply: req.body.reply,
