@@ -53,7 +53,6 @@ module.exports = {
     }
   ],
   put: [
-    auth.recaptcha,
     auth.basic,
     async (req, res, next) => {
       if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
