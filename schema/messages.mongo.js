@@ -1,7 +1,7 @@
 const uuidv4 = require('uuid/v4')
 
 module.exports = {
-  _id: {
+  uuid: {
     type: String,
     default: () => {
       return uuidv4()
