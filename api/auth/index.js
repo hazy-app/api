@@ -37,10 +37,16 @@ module.exports = {
         })
       }
       try {
-        const token = await auth.sign({
+        const tokenObject = {
           username: user.username,
-          create_date: user.create_date
-        })
+          create_date: user.create_date,
+          role: []
+        }
+        // soooo hardcode!
+        if (req.body.username === 'nainemom') {
+          tokenObject.role.push('admin')
+        }
+        const token = await auth.sign(tokenObject)
         res.send(`bearer ${token}`)
       } catch (e) {
         console.log(e)
