@@ -20,7 +20,7 @@ module.exports = {
     }
   ],
   delete: [
-    auth.basic,
+    auth.basic(true),
     async (req, res, next) => {
       if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         return res.status(403).send({
@@ -53,7 +53,7 @@ module.exports = {
     }
   ],
   put: [
-    auth.basic,
+    auth.basic(true),
     async (req, res, next) => {
       if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         return res.status(403).send({
@@ -64,7 +64,7 @@ module.exports = {
     }, async (req, res, next) => {
       const message = await database.getTable('messages').getOne({
         uuid: req.params.message,
-        receiver: req.params.username.toLowerCase()
+        receiver: req.params.username.toLowerCase(),
       })
       if (!message) {
         return res.status(404).send({
@@ -81,7 +81,8 @@ module.exports = {
           }, 
           {
             reply: req.body.reply,
-            reply_date: new Date()
+            reply_date: new Date(),
+            public: !!req.body.public
           },
           { multi: false }
         )
