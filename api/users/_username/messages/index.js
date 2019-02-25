@@ -6,25 +6,21 @@ const messageModel = require(path.resolve(__rootdir, './schema/post-message.mode
 
 module.exports = {
   get: [
-    auth.basic,
-    async (req, res, next) => {
-      if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
-        return res.status(403).send({
-          message: 'You dont have an access to this section'
-        })
-      }
-      next()
-    }, async (req, res) => {
+    auth.basic(false),
+    async (req, res) => {
       const page = req.query.page ? parseInt(req.query.page) : 1
       const per_page = req.query.per_page ? parseInt(req.query.per_page) : 10
       const searchQuery = {
         receiver: req.params.username.toLowerCase()
       }
+      if (!req.parsedToken.username || req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
+        searchQuery.public = true
+      }
+      console.log(searchQuery)
       const data = await database.getTable('messages').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
       res.send(data)
     }
   ],
-
   post: [
     auth.recaptcha,
     async (req, res, next) => {
@@ -45,6 +41,7 @@ module.exports = {
           text: req.body.text,
           reply: null,
           reply_date: null,
+          public: false,
           create_date: new Date()
         })
         res.send(data)
