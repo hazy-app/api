@@ -23,5 +23,8 @@ module.exports = {
   },
   reply_date: {
     type: Date
+  },
+  public: {
+    type: Boolean
   }
 }
