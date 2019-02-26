@@ -75,15 +75,19 @@ module.exports = {
     },
     async (req, res) => {
       try {
+        const editingData = {}
+        if (typeof req.body.reply !== 'undefined') {
+          editingData.reply = req.body.reply
+          editingData.reply_date = new Date()
+        }
+        if (typeof req.body.public !== 'undefined') {
+          editingData.public = !!req.body.public
+        }
         const data = await database.getTable('messages').model.update(
           {
             uuid: req.params.message.toLowerCase()
           }, 
-          {
-            reply: req.body.reply,
-            reply_date: new Date(),
-            public: !!req.body.public
-          },
+          editingData,
           { multi: false }
         )
 
