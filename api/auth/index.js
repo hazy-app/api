@@ -39,7 +39,6 @@ module.exports = {
       try {
         const tokenObject = {
           username: user.username,
-          create_date: user.create_date,
           role: []
         }
         // soooo hardcode!
