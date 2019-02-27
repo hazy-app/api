@@ -1,6 +1,6 @@
 {
   "name": "hazy-api",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Hazy api",
   "main": "index.js",
   "scripts": {
