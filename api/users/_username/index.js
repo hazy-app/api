@@ -34,7 +34,9 @@ module.exports = {
       }
     },
     async (req, res, next) => {
-      req.body.password = bcrypt.hashSync(req.body.password || '1234', BCRYPT_SALT_ROUNDS)
+      if (typeof req.body.password !== 'undefined') {
+        req.body.password = bcrypt.hashSync(req.body.password, BCRYPT_SALT_ROUNDS)
+      }
       next()
     },
     async (req, res, next) => {
@@ -51,17 +53,26 @@ module.exports = {
     },
     async (req, res) => {
       try {
+        const editingData = {}
+        if (typeof req.body.password !== 'undefined') {
+          editingData.password = req.body.password
+        }
+        if (typeof req.body.password_hint !== 'undefined') {
+          editingData.password_hint = req.body.password_hint
+        }
+
         const data = await database.getTable('users').model.update(
           {
             username: req.params.username.toLowerCase()
           }, 
-          {
-            password: req.body.password,
-            password_hint: req.body.password_hint || 'One, Two, Three and Four?'
-          },
+          editingData,
           { multi: false }
         )
-        return res.send(data)
+        const token = await auth.sign({
+          username: req.params.username.toLowerCase()
+        })
+
+        return res.send(token)
       } catch (e) {
         console.log(e)
         return res.status(500).send('500')
