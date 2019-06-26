@@ -14,6 +14,7 @@ module.exports = {
       })
     }
     res.send({
+      _id: data._id,
       username: data.username,
       password_hint: data.password_hint,
       create_date: data.create_date
