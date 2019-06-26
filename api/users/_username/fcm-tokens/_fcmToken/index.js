@@ -1,7 +1,7 @@
 module.exports = {
   delete: [async (req, res) => {
     try {
-      await database.getTable('users').model.update(
+      await database.getTable('users').model.updateMany(
         {
           fcmTokens: req.params.fcmToken
         }, 

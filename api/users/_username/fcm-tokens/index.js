@@ -9,7 +9,7 @@ module.exports = {
     next()
   }, async (req, res) => {
     try {
-      await database.getTable('users').model.update(
+      await database.getTable('users').model.updateOne(
         {
           username: req.params.username.toLowerCase()
         }, 

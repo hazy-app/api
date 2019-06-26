@@ -62,7 +62,7 @@ module.exports = {
           editingData.password_hint = req.body.password_hint
         }
 
-        const data = await database.getTable('users').model.update(
+        const data = await database.getTable('users').model.updateOne(
           {
             username: req.params.username.toLowerCase()
           }, 
