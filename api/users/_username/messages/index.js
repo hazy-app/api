@@ -53,7 +53,7 @@ module.exports = {
               return
             }
             // Delete invalid or expired tokens from database
-            database.getTable('users').model.update(
+            database.getTable('users').model.updateOne(
               {
                 username: req.params.username.toLowerCase()
               }, 

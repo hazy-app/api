@@ -83,7 +83,7 @@ module.exports = {
         if (typeof req.body.public !== 'undefined') {
           editingData.public = !!req.body.public
         }
-        const data = await database.getTable('messages').model.update(
+        const data = await database.getTable('messages').model.updateOne(
           {
             uuid: req.params.message.toLowerCase()
           }, 
