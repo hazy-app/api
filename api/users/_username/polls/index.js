@@ -43,8 +43,8 @@ module.exports = {
         const data = await database.getTable('polls').save({
           user: req.params.username.toLowerCase(),
           title: req.body.title,
-          choices: req.body.choises,
-          answers: Array(req.body.choises.length).fill(0),
+          choices: req.body.choices,
+          answers: Array(req.body.choices.length).fill(0),
           create_date: new Date()
         })
         res.send(data)
