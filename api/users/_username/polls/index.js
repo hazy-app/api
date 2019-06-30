@@ -11,7 +11,7 @@ module.exports = {
       const page = req.query.page ? parseInt(req.query.page) : 1
       const per_page = req.query.per_page ? parseInt(req.query.per_page) : 10
       const searchQuery = {
-        user: req.params.username.toLowerCase()
+        creator: req.params.username.toLowerCase()
       }
       const data = await database.getTable('polls').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
       res.send(data)
@@ -41,7 +41,7 @@ module.exports = {
     }, async (req, res) => {
       try {
         const data = await database.getTable('polls').save({
-          user: req.params.username.toLowerCase(),
+          creator: req.params.username.toLowerCase(),
           title: req.body.title,
           choices: req.body.choices,
           answers: Array(req.body.choices.length).fill(0),

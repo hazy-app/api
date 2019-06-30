@@ -7,7 +7,7 @@ module.exports = {
       return uuidv4()
     }
   },
-  user: {
+  creator: {
     type: String,
     required: true
   },
@@ -23,6 +23,19 @@ module.exports = {
     type: Array,
     required: true,
     default: () => []
+  },
+  participants: {
+    type: Array,
+    required: true,
+    default: () => []
+  },
+  active: {
+    type: Boolean,
+    default: () => true
+  },
+  public: {
+    type: Boolean,
+    default: () => true
   },
   create_date: {
     type: Date

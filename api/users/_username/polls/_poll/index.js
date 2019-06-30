@@ -8,8 +8,8 @@ module.exports = {
   get: [
     async (req, res) => {
       const poll = await database.getTable('polls').getOne({
-        uuid: req.params.message,
-        user: req.params.username.toLowerCase()
+        uuid: req.params.poll,
+        creator: req.params.username.toLowerCase()
       })
       if (!poll) {
         return res.status(404).send({
