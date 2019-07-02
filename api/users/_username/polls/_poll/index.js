@@ -2,7 +2,7 @@ const Modela = require('modela')
 const path = require('path')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
 const bcrypt = require('bcryptjs')
-const messageModel = require(path.resolve(__rootdir, './schema/post-message.modela.js'))
+const sha256 = require('js-sha256')
 
 module.exports = {
   get: [
@@ -24,14 +24,14 @@ module.exports = {
     async (req, res, next) => {
       if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         return res.status(403).send({
-          message: 'You dont have an access to do this job.'
+          message: `You don't have an access to do this job.`
         })        
       }
       next()
     }, async (req, res, next) => {
       const poll = await database.getTable('polls').getOne({
         uuid: req.params.poll,
-        user: req.params.username.toLowerCase()
+        creator: req.params.username.toLowerCase()
       })
       if (!poll) {
         return res.status(404).send({
@@ -47,24 +47,18 @@ module.exports = {
         res.status(204).send()
       } catch (e) {
         return res.status(404).send({
-          message: 'Message not found.'
+          message: 'Poll not found.'
         })  
       }
     }
   ],
   patch: [
-    auth.basic(true),
+    auth.recaptcha,
+    auth.basic(false),
     async (req, res, next) => {
-      if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
-        return res.status(403).send({
-          message: 'You dont have an access to do this job.'
-        })        
-      }
-      next()
-    }, async (req, res, next) => {
-      const poll = await database.getTable('poll').getOne({
-        uuid: req.params.message,
-        user: req.params.username.toLowerCase(),
+      const poll = await database.getTable('polls').getOne({
+        uuid: req.params.poll,
+        creator: req.params.username.toLowerCase(),
       })
       if (!poll) {
         return res.status(404).send({
@@ -74,14 +68,9 @@ module.exports = {
       req.poll = poll
       next()
     }, async (req, res, next) => {
-      if (!req.body.choice) {
-        return res.status(401).send({
-          message: 'You should pass your `choice` in body.'
-        })
-      }
       if (typeof req.body.choice !== 'number') {
         return res.status(401).send({
-          message: '`choice` is number!'
+          message: 'You should pass your `choice` with number type in request body.'
         })
       }
       if (req.body.choice >= req.poll.choices.length || req.body.choice < 0) {
@@ -89,21 +78,51 @@ module.exports = {
           message: `Your \`choice\` must be from 0 to ${req.poll.choices.length - 1}.`
         })
       }
+      if (!req.headers['x-browser-fingerprint']) {
+        return res.status(403).send({
+          message: `You dont't have an access to do this job.`
+        })
+      }
+      const ip = req.connection.remoteAddress || req.headers['x-forwarded-for']
+      // we wont keep real ip address!!!
+      // req.headers['x-browser-fingerprint'] hashed before (inside web-app)
+      req.userFingerprints = [sha256(ip), req.headers['x-browser-fingerprint']]
       next()
-    },
-    async (req, res) => {
+    }, async (req, res, next) => {
+      if (
+        req.parsedToken.username &&
+        (req.parsedToken.username.toLowerCase() === req.params.username.toLowerCase() ||
+        (req.parsedToken.role instanceof Array && req.parsedToken.role.indexOf('admin') > -1))
+      ) {
+        next()
+      } else {
+        const poll = await database.getTable('polls').getOne({
+          uuid: req.params.poll,
+          creator: req.params.username.toLowerCase(),
+          participants: {
+            $in: req.userFingerprints
+          }
+        })
+        if (poll) {
+          return res.status(403).send({
+            message: `Access denied! You voted before!`
+          })
+        }
+        next()
+      }
+    }, async (req, res) => {
       try {
-        const data = await database.getTable('polls').model.update(
+        const updateModel = {
+          $inc: {},
+          $push: {}
+        }
+        updateModel.$inc[`answers.${req.body.choice}`] = 1
+        updateModel.$push.participants = req.userFingerprints
+        const data = await database.getTable('polls').model.updateOne(
           {
             uuid: req.params.poll.toLowerCase()
           }, 
-          {
-            $inc: { "answers.$[element]": 1 }
-          },
-          {
-            arrayFilters: [ { element: req.body.choice } ],
-            multi: false
-          }
+          updateModel
         )
 
         res.send(data)
