@@ -24,8 +24,9 @@ module.exports = {
     auth.basic(true),
     async (req, res, next) => {
       if (
-        req.parsedToken.username.toLowerCase() === req.params.username.toLowerCase() ||
-        (req.parsedToken.role instanceof Array && req.parsedToken.role.indexOf('admin') > -1)
+        req.parsedToken.username &&
+        (req.parsedToken.username.toLowerCase() === req.params.username.toLowerCase() ||
+        (req.parsedToken.role instanceof Array && req.parsedToken.role.indexOf('admin') > -1))
       ) {
         next()
       } else {
