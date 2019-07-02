@@ -1,7 +1,7 @@
 const Modela = require('modela')
 const path = require('path')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
-const bcrypt = require('bcryptjs')
+const utils = require(path.resolve(__rootdir, './lib/utils.js'))
 const sha256 = require('js-sha256')
 
 module.exports = {
@@ -86,7 +86,7 @@ module.exports = {
       const ip = req.connection.remoteAddress || req.headers['x-forwarded-for']
       // we wont keep real ip address!!!
       // req.headers['x-browser-fingerprint'] hashed before (inside web-app)
-      req.userFingerprints = [sha256(ip), req.headers['x-browser-fingerprint']]
+      req.userFingerprints = [`${sha256(ip)}-${utils.roundedHourTime(10)}` , `${req.headers['x-browser-fingerprint']}-${utils.roundedHourTime(240)}`]
       next()
     }, async (req, res, next) => {
       if (
