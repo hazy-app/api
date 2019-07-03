@@ -105,7 +105,7 @@ module.exports = {
         })
         if (poll) {
           return res.status(403).send({
-            message: `Access denied! You voted before!`
+            message: `It seems you voted before. Please try again later.`
           })
         }
         next()
