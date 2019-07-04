@@ -26,7 +26,7 @@ module.exports = {
         username: user.username,
         highlighted: '@' + user.username.replace(req.query.q.toLowerCase(), `<u>${req.query.q.toLowerCase()}</u>`),
         create_date: user.create_date
-      }))
+      })).filter(user => user.username !== req.parsedToken.username)
       res.send(result)
     }
   ]
