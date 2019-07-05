@@ -16,7 +16,7 @@ module.exports = {
       if (!req.parsedToken.username || req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         searchQuery.public = true
       }
-      console.log(searchQuery)
+      // console.log(searchQuery)
       const data = await database.getTable('messages').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
       res.send(data)
     }
