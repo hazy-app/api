@@ -3,10 +3,10 @@ const path = require('path')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
 const bcrypt = require('bcryptjs')
 const postQuestionModel = require(path.resolve(__rootdir, './schema/post-question.modela.js'))
+const baseQuestion = require(path.resolve(__rootdir, './schema/base-question.js'))
 
 module.exports = {
   get: [
-    auth.basic(false),
     async (req, res) => {
       const page = req.query.page ? parseInt(req.query.page) : 1
       const per_page = req.query.per_page ? parseInt(req.query.per_page) : 10
@@ -14,6 +14,11 @@ module.exports = {
         creator: req.params.username.toLowerCase()
       }
       const data = await database.getTable('questions').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
+      if (page === 1 && data.result.length === 0) {
+        data.result.push(Object.assign(baseQuestion, {
+          creator: req.params.username.toLowerCase()
+        }))
+      }
       res.send(data)
     }
   ],
@@ -40,7 +45,7 @@ module.exports = {
       next()
     }, async (req, res) => {
       try {
-        const data = await database.getTable('polls').save({
+        const data = await database.getTable('questions').save({
           creator: req.params.username.toLowerCase(),
           text: req.body.text,
           create_date: new Date()

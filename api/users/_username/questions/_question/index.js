@@ -1,11 +1,19 @@
-const Modela = require('modela')
 const path = require('path')
 const auth = require(path.resolve(__rootdir, './lib/auth.js'))
-const utils = require(path.resolve(__rootdir, './lib/utils.js'))
-const sha256 = require('js-sha256')
+const baseQuestion = require(path.resolve(__rootdir, './schema/base-question.js'))
+
 
 module.exports = {
   get: [
+    async (req, res, next) => {
+      if (req.params.question === 'default') {
+        res.send(Object.assign(baseQuestion, {
+          creator: req.params.username.toLowerCase()
+        }))
+      } else {
+        next()
+      }
+    },
     async (req, res) => {
       const question = await database.getTable('questions').getOne({
         _id: req.params.question,
