@@ -23,6 +23,7 @@ const init = async () => {
   database.setTable('users', require('./schema/users.mongo.js'))
   database.setTable('messages', require('./schema/messages.mongo.js'))
   database.setTable('polls', require('./schema/polls.mongo.js'))
+  database.setTable('questions', require('./schema/questions.mongo.js'))
   const server = express()
   server.use(...middlewares)
   server.use(routes)
