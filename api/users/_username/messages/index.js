@@ -10,13 +10,25 @@ module.exports = {
     async (req, res) => {
       const page = req.query.page ? parseInt(req.query.page) : 1
       const per_page = req.query.per_page ? parseInt(req.query.per_page) : 10
-      const searchQuery = {
-        receiver: req.params.username.toLowerCase()
+      if (req.query.question === 'default') {
+        req.query.question = undefined
       }
+      const searchQuery = {
+        receiver: req.params.username.toLowerCase(),
+        
+      }
+      if (!req.query.question) {
+        searchQuery.question = {
+          $exists: false
+        }
+      } else {
+        searchQuery.question = req.query.question
+      }
+      
       if (!req.parsedToken.username || req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         searchQuery.public = true
       }
-      // console.log(searchQuery)
+      console.log(searchQuery)
       const data = await database.getTable('messages').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
       res.send(data)
     }
@@ -35,15 +47,22 @@ module.exports = {
       req.receiver = receiver
       next()
     }, async (req, res) => {
+      if (req.query.question === 'default') {
+        req.query.question = undefined
+      }
       try {
-        const data = await database.getTable('messages').save({
+        const saveObj = {
           receiver: req.params.username.toLowerCase(),
           text: req.body.text,
           reply: null,
           reply_date: null,
           public: false,
           create_date: new Date()
-        })
+        }
+        if (req.query.question) {
+          saveObj.question = req.query.question
+        }
+        const data = await database.getTable('messages').save(saveObj)
         res.send(data)
 
         // Send push notification to receiver
