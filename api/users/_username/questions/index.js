@@ -14,7 +14,7 @@ module.exports = {
         creator: req.params.username.toLowerCase()
       }
       const data = await database.getTable('questions').get(searchQuery, (page * per_page) - per_page, per_page, '-create_date')
-      if (page === 1 && data.result.length === 0) {
+      if (page === 1) {
         data.result.push(Object.assign(baseQuestion, {
           creator: req.params.username.toLowerCase()
         }))
