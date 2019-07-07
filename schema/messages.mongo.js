@@ -26,5 +26,8 @@ module.exports = {
   },
   public: {
     type: Boolean
+  },
+  question: {
+    type: String
   }
 }
