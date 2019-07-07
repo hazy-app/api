@@ -15,16 +15,20 @@ module.exports = {
       }
     },
     async (req, res) => {
-      const question = await database.getTable('questions').getOne({
-        _id: req.params.question,
-        creator: req.params.username.toLowerCase()
-      })
-      if (!question) {
+      try {
+        const question = await database.getTable('questions').getOne({
+          _id: req.params.question,
+          creator: req.params.username.toLowerCase()
+        })
+        if (!question) {
+          throw new Error(404)
+        }
+        res.status(200).send(question)
+      } catch (e) {
         return res.status(404).send({
           message: 'Question not found.'
         })
       }
-      res.status(200).send(question)
     }
   ],
   delete: [
@@ -37,7 +41,7 @@ module.exports = {
       }
       next()
     }, async (req, res, next) => {
-      const poll = await database.getTable('questions').getOne({
+      const question = await database.getTable('questions').getOne({
         _id: req.params.question,
         creator: req.params.username.toLowerCase()
       })
