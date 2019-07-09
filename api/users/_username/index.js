@@ -96,25 +96,17 @@ module.exports = {
   // /avatar.jpg
   getAvatar: [
     async (req, res, next) => {
-      const data = await database.getTable('users').getOne({
-        username: req.params.username.toLowerCase()
-      })
-
-      if (!data) {
-        return res.status(404).send({
-          message: 'User not found'
+      try {
+        const user = await database.getTable('users').getOne({
+          username: req.params.username.toLowerCase()
         })
+        if (!user.gravatar) {
+          throw new Error()
+        }
+        return res.status(301).redirect(`https://www.gravatar.com/avatar/${user.gravatar}?size=${req.query.size || 128}`)
+      } catch (e) {
+        return res.sendFile(path.resolve(__rootdir, './assets/default-profile-picture.jpg'))
       }
-      req.user = data
-      next()
-    },
-    (req, res) => {
-      if (!req.user.gravatar) {
-        return res.status(404).send({
-          message: 'User has not avatar!'
-        })
-      }
-      return res.status(301).redirect(`https://www.gravatar.com/avatar/${req.user.gravatar}?size=${req.query.size || 96}`)
     }
   ]
 }
