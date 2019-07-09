@@ -16,6 +16,9 @@ module.exports = {
     type: Array,
     default: []
   },
+  gravatar: {
+    type: String
+  },
   create_date: {
     type: Date
   }

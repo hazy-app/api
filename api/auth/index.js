@@ -39,6 +39,7 @@ module.exports = {
       try {
         const tokenObject = {
           username: user.username,
+          gravatar: user.gravatar || '',
           role: []
         }
         // soooo hardcode!
