@@ -16,6 +16,7 @@ module.exports = {
     res.send({
       _id: data._id,
       username: data.username,
+      gravatar: data.gravatar || undefined,
       password_hint: data.password_hint,
       create_date: data.create_date
     })
@@ -62,6 +63,9 @@ module.exports = {
         if (typeof req.body.password_hint !== 'undefined') {
           editingData.password_hint = req.body.password_hint
         }
+        if (typeof req.body.gravatar !== 'undefined') {
+          editingData.gravatar = req.body.gravatar
+        }
 
         const data = await database.getTable('users').model.updateOne(
           {
@@ -70,15 +74,47 @@ module.exports = {
           editingData,
           { multi: false }
         )
-        const token = await auth.sign({
-          username: req.params.username.toLowerCase()
-        })
+        const tokenObject = {
+          username: req.params.username.toLowerCase(),
+          gravatar: editingData.gravatar,
+          role: []
+        }
+        // soooo hardcode!
+        if (req.body.username === 'nainemom') {
+          tokenObject.role.push('admin')
+        }
+        const token = await auth.sign(tokenObject)
 
         return res.send(token)
       } catch (e) {
         console.log(e)
         return res.status(500).send('500')
       }
+    }
+  ],
+  // custom
+  // /avatar.jpg
+  getAvatar: [
+    async (req, res, next) => {
+      const data = await database.getTable('users').getOne({
+        username: req.params.username.toLowerCase()
+      })
+
+      if (!data) {
+        return res.status(404).send({
+          message: 'User not found'
+        })
+      }
+      req.user = data
+      next()
+    },
+    (req, res) => {
+      if (!req.user.gravatar) {
+        return res.status(404).send({
+          message: 'User has not avatar!'
+        })
+      }
+      return res.status(301).redirect(`https://www.gravatar.com/avatar/${req.user.gravatar}?size=${req.query.size || 96}`)
     }
   ]
 }

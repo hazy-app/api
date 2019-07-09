@@ -27,6 +27,7 @@ const init = async () => {
   const server = express()
   server.use(...middlewares)
   server.use(routes)
+  server.get('/users/:username/avatar.jpg', require('./api/users/_username/index.js').getAvatar)
   server.get('/ping', (req, res) => res.send('pong'))
   server.listen(PORT, () => {
     console.log(`Hazy start listening on port ${PORT}!`)
