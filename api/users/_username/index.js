@@ -91,5 +91,30 @@ module.exports = {
         return res.status(500).send('500')
       }
     }
+  ],
+  // custom
+  // /avatar.jpg
+  getAvatar: [
+    async (req, res, next) => {
+      const data = await database.getTable('users').getOne({
+        username: req.params.username.toLowerCase()
+      })
+
+      if (!data) {
+        return res.status(404).send({
+          message: 'User not found'
+        })
+      }
+      req.user = data
+      next()
+    },
+    (req, res) => {
+      if (!req.user.gravatar) {
+        return res.status(404).send({
+          message: 'User has not avatar!'
+        })
+      }
+      return res.status(301).redirect(`https://www.gravatar.com/avatar/${req.user.gravatar}?size=${req.query.size || 96}`)
+    }
   ]
 }
