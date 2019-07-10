@@ -24,7 +24,10 @@ module.exports = {
   delete: [
     auth.basic(true),
     async (req, res, next) => {
-      if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
+      if (
+        (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase() &&
+        (!(req.parsedToken.role instanceof Array) || req.parsedToken.role.indexOf('admin') === -1))
+      ) {
         return res.status(403).send({
           message: `You don't have an access to do this job.`
         })        
@@ -113,7 +116,7 @@ module.exports = {
           role: []
         }
         // soooo hardcode!
-        if (req.body.username === 'nainemom') {
+        if (tokenObject.username === 'nainemom') {
           tokenObject.role.push('admin')
         }
         const token = await auth.sign(tokenObject)
