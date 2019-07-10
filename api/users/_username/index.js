@@ -21,6 +21,39 @@ module.exports = {
       create_date: data.create_date
     })
   },
+  delete: [
+    auth.basic(true),
+    async (req, res, next) => {
+      if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
+        return res.status(403).send({
+          message: `You don't have an access to do this job.`
+        })        
+      }
+      next()
+    }, async (req, res, next) => {
+      const data = await database.getTable('users').getOne({
+        username: req.params.username.toLowerCase()
+      })
+  
+      if (!data) {
+        return res.status(404).send({
+          message: 'User not found'
+        })
+      }
+      next()
+    }, async (req, res) => {
+      try {
+        await database.getTable('users').remove({
+          username: req.params.username.toLowerCase()
+        })
+        res.status(204).send()
+      } catch (e) {
+        return res.status(404).send({
+          message: 'User not found.'
+        })  
+      }
+    }
+  ],
   patch: [
     auth.basic(true),
     async (req, res, next) => {
