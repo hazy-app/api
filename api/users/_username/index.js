@@ -49,6 +49,15 @@ module.exports = {
         await database.getTable('users').remove({
           username: req.params.username.toLowerCase()
         })
+        await database.getTable('messages').remove({
+          receiver: req.params.username.toLowerCase()
+        })
+        await database.getTable('polls').remove({
+          creator: req.params.username.toLowerCase()
+        })
+        await database.getTable('questions').remove({
+          creator: req.params.username.toLowerCase()
+        })
         res.status(204).send()
       } catch (e) {
         return res.status(404).send({
