@@ -28,6 +28,17 @@ module.exports = {
       }
       next()
     }, async (req, res, next) => {
+      const count = await await database.getTable('polls').model.count({
+        creator: req.params.username.toLowerCase()
+      }).exec()
+      if (count > 100) {
+        return res.status(403).send({
+          message: 'You can\'t create more than 100 polls.'
+        })
+      } else {
+        next()
+      }
+    },  async (req, res, next) => {
       const model = new Modela(postPollModel)
       model.$set(req.body).$clean()
       const check = model.$check()
