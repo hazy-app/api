@@ -29,9 +29,18 @@ module.exports = {
       if (req.parsedToken.username.toLowerCase() !== req.params.username.toLowerCase()) {
         return res.status(403).send({
           message: 'You dont have an access to do this job.'
-        })        
+        })
       }
       next()
+    }, async (req, res, next) => {
+      const count = await await database.getTable('questions').model.count({
+        creator: req.params.username.toLowerCase()
+      }).exec()
+      if (count > 100) {
+        return res.status(403).send({
+          message: 'You can\'t create more than 100 questions.'
+        })
+      }
     }, async (req, res, next) => {
       const model = new Modela(postQuestionModel)
       model.$set(req.body).$clean()
