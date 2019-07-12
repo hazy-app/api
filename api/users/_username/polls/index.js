@@ -35,6 +35,8 @@ module.exports = {
         return res.status(403).send({
           message: 'You can\'t create more than 100 polls.'
         })
+      } else {
+        next()
       }
     },  async (req, res, next) => {
       const model = new Modela(postPollModel)
