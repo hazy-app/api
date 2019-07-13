@@ -129,8 +129,7 @@ module.exports = {
           tokenObject.role.push('admin')
         }
         const token = await auth.sign(tokenObject)
-
-        return res.send(token)
+        res.send(`bearer ${token}`)
       } catch (e) {
         console.log(e)
         return res.status(500).send('500')
