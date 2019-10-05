@@ -29,3 +29,6 @@ spec:
     - name: FIREBASE_SERVER_KEY
       value: ${FIREBASE_SERVER_KEY}
       hidden: true
+    - name: RECAPTCHA_SKIP_VALUE
+      value: ${RECAPTCHA_SKIP_VALUE}
+      hidden: true
