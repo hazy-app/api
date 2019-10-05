@@ -6,6 +6,7 @@ global.JWT_SECRET = process.env.JWT_SECRET
 global.RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY
 global.RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY
 global.FIREBASE_SERVER_KEY = process.env.FIREBASE_SERVER_KEY
+global.RECAPTCHA_SKIP_VALUE = process.env.RECAPTCHA_SKIP_VALUE
 
 /// MODULES
 global.__rootdir = __dirname
