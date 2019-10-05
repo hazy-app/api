@@ -13,4 +13,4 @@ script:
   - echo $TRAVIS_COMMIT  
   - COLLECT_ERROR=True fandogh login --username=$FANDOGH_USERNAME --password=$FANDOGH_PASSWORD
   - ./publish_image.sh $TRAVIS_COMMIT || travis_terminate 1
-  - ./deploy_service.sh $TRAVIS_COMMIT $MONGO_URI $JWT_SECRET $RECAPTCHA_SECRET_KEY $FIREBASE_SERVER_KEY || travis_terminate 1;
+  - ./deploy_service.sh $TRAVIS_COMMIT $MONGO_URI $JWT_SECRET $RECAPTCHA_SECRET_KEY $FIREBASE_SERVER_KEY $RECAPTCHA_SKIP_VALUE || travis_terminate 1;
