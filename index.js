@@ -11,6 +11,8 @@ global.RECAPTCHA_SKIP_VALUE = process.env.RECAPTCHA_SKIP_VALUE
 /// MODULES
 global.__rootdir = __dirname
 const express = require('express')
+const http = require('http')
+const socketIo = require('socket.io')
 const routes = require('./lib/routes.js')
 const middlewares = require('./lib/middlewares.js')
 const Database = require('./lib/Database.js')
@@ -25,11 +27,14 @@ const init = async () => {
   database.setTable('messages', require('./schema/messages.mongo.js'))
   database.setTable('polls', require('./schema/polls.mongo.js'))
   database.setTable('questions', require('./schema/questions.mongo.js'))
-  const server = express()
-  server.use(...middlewares)
-  server.use(routes)
-  server.get('/users/:username/avatar.jpg', require('./api/users/_username/index.js').getAvatar)
-  server.get('/ping', (req, res) => res.send('pong'))
+  const api = express()
+  const server = http.createServer(api)
+  const io = socketIo(server)
+  api.use(...middlewares)
+  api.use(routes)
+  api.get('/users/:username/avatar.jpg', require('./api/users/_username/index.js').getAvatar)
+  api.get('/ping', (req, res) => res.send('pong'))
+
   server.listen(PORT, () => {
     console.log(`Hazy start listening on port ${PORT}!`)
   })
