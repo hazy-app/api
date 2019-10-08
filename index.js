@@ -14,6 +14,7 @@ const express = require('express')
 const http = require('http')
 const socketIo = require('socket.io')
 const routes = require('./lib/routes.js')
+const ioHandler = require('./socket/index.js')
 const middlewares = require('./lib/middlewares.js')
 const Database = require('./lib/Database.js')
 global.push = require('./lib/push.js')
@@ -21,7 +22,7 @@ global.database = new Database()
 
 // APP
 const init = async () => {
-  await database.connect(MONGO_URI)
+  // await database.connect(MONGO_URI)
   console.log('mongo connected')
   database.setTable('users', require('./schema/users.mongo.js'))
   database.setTable('messages', require('./schema/messages.mongo.js'))
@@ -33,6 +34,10 @@ const init = async () => {
   api.use(...middlewares)
   api.use(routes)
   api.get('/users/:username/avatar.jpg', require('./api/users/_username/index.js').getAvatar)
+
+  io.on('connection', socket => {
+    ioHandler._registerEvents(socket)
+  });
   api.get('/ping', (req, res) => res.send('pong'))
 
   server.listen(PORT, () => {
