@@ -36,7 +36,7 @@ const init = async () => {
   api.get('/users/:username/avatar.jpg', require('./api/users/_username/index.js').getAvatar)
 
   io.on('connection', socket => {
-    ioHandler._registerEvents(socket)
+    ioHandler._registerEvents(io, socket)
   });
   api.get('/ping', (req, res) => res.send('pong'))
 
