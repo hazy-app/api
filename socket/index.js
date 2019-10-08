@@ -1,26 +1,49 @@
 module.exports = {
-  ids: [],
-  readyForChat(id) {
-    console.log(id, 'connected')
-
-    // TODO: use db instead of local Array :(
-    this.ids.push(id)
-  },
-  disconnectFromChat(id) {
-    console.log(id, 'disconnected')
-
-    // TODO: use db instead of local Array :(
-    const index = this.ids.indexOf(id)
-    if (index !== -1) {
-      this.ids.splice(index, 1)
+  partnerRequest(io, socket) {
+    console.log(socket.id, 'request partner...')
+    socket.customData.partner = null // means waiting for partner
+    // try to find partner
+    const allSockets = io.sockets.clients()
+    console.log('try to find partner from', allSockets.length)
+    Object.keys(allSockets)
+    for(let i = 0; i < Object.keys(allSockets).length; i++) {
+      const _socket = allSockets[i]
+      if (_socket.customData.partner === null && _socket.id !== socket.id) {
+        console.log('two people connected!')
+        _socket.customData.partner = socket.id
+        _socket.emit('partnerRequestAccept')
+        socket.customData.partner = _socket.id
+        socket.emit('partnerRequestAccept')
+        break
+      }
     }
   },
-  _registerEvents(socket) {
-    const events = Object.keys(this).filter(method => !['_registerEvents'].includes(method))
+  messageToPartner(io, socket, message) {
+    if (!socket.customData.partner) {
+      return
+    }
+    const allSockets = io.sockets.clients()
+    const partner = io.sockets.connected[socket.customData.partner]
+    partner.emit('messageFromPartner', message)
+
+  },
+  // automaticly calling when disconnect (or also when user request)
+  disconnect(io, socket) {
+    if (socket.customData.partner) {
+      const partner = io.sockets.connected[socket.customData.partner]
+      partner.disconnect()
+    }
+  },
+
+  _registerEvents(io, socket) {
+    socket.customData = {
+      partner: undefined
+    }
+    const events = Object.keys(this).filter(method => method.indexOf('_') !== 0)
     events.forEach(event => {
-      socket.on(event, token => {
+      socket.on(event, data => {
         // TODO validate token
-        this[event](socket.id)
+        this[event](io, socket, data)
       })
     })
   }
