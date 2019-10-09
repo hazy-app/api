@@ -22,7 +22,7 @@ global.database = new Database()
 
 // APP
 const init = async () => {
-  // await database.connect(MONGO_URI)
+  await database.connect(MONGO_URI)
   console.log('mongo connected')
   database.setTable('users', require('./schema/users.mongo.js'))
   database.setTable('messages', require('./schema/messages.mongo.js'))
