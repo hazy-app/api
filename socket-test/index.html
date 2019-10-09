@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://unpkg.com/socket.io-client@2.3.0/dist/socket.io.js"></script>
+</head>
+<body>
+  <div>
+    <label>Status:</label>
+    <span id="status"></span>
+  </div>
+  <div>
+    <label>Partner Status:</label>
+    <span id="partner"></span>
+    <button id="partner-request" onclick="partnerRequest()">Partner Request</button>
+  </div>
+  <div id="partner-messages"></div>
+  <textarea id="input"></textarea>
+  <button id="send-message" onclick="messageToPartner()">Send Message</button>
+  
+
+
+  <script>
+    const $status = document.querySelector('#status')
+    const $partner = document.querySelector('#partner')
+    const $partnerMessages = document.querySelector('#partner-messages')
+    const $input = document.querySelector('#input')
+
+    $partner.innerHTML = 'No one!'
+    $status.innerHTML = 'Connecting...'
+
+    const socket = io.connect('http://localhost:3002')
+    socket.on('connect', () => {
+      $status.innerHTML = 'Connected'
+    })
+    socket.on('disconnect', () => {
+      $partnerMessages.innerHTML = ''
+      $partner.innerHTML = ''
+      $status.innerHTML = 'Disconnected'
+    })
+    socket.on('reconnecting', () => {
+      $partnerMessages.innerHTML = ''
+      $status.innerHTML = 'Reconnecting...'
+    })
+    socket.on('partnerConnect', () => {
+      $partnerMessages.innerHTML = ''
+      $partner.innerHTML = 'Someone!'
+    })
+    socket.on('partnerDisconnect', () => {
+      $partnerMessages.innerHTML = ''
+      $partner.innerHTML = 'No one!'
+    })
+    socket.on('messageFromPartner', (message) => {
+      $partnerMessages.innerHTML += `<div>Partner: ${message}</div>`
+    })
+
+    function messageToPartner() {
+      socket.emit('messageToPartner', $input.value)
+      $partnerMessages.innerHTML += `<div>Me: ${$input.value}</div>`
+      $input.value = ''
+    }
+
+    function partnerRequest() {
+      socket.emit('partnerRequest', null)
+      $partnerMessages.innerHTML += ''
+      $partner.innerHTML = 'Finding...'
+      $input.value = ''
+    }
+  </script>
+</body>
+</html>
