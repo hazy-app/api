@@ -17,9 +17,15 @@
     <span id="partner"></span>
     <button id="partner-request" onclick="partnerRequest()">Partner Request</button>
   </div>
+  <div>
+    <label>Waiting Persons:</label>
+    <span id="waiting-persons-count"></span>
+  </div>
   <div id="partner-messages"></div>
-  <textarea id="input"></textarea>
-  <button id="send-message" onclick="messageToPartner()">Send Message</button>
+  <form id="message-form">
+    <input id="input" required></input>
+    <button id="send-message">Send Message</button>
+  </form>
   
 
 
@@ -27,7 +33,9 @@
     const $status = document.querySelector('#status')
     const $partner = document.querySelector('#partner')
     const $partnerMessages = document.querySelector('#partner-messages')
+    const $watingPersonsCount = document.querySelector('#waiting-persons-count')
     const $input = document.querySelector('#input')
+    const $messageForm = document.querySelector('#message-form')
 
     $partner.innerHTML = 'No one!'
     $status.innerHTML = 'Connecting...'
@@ -38,12 +46,15 @@
     })
     socket.on('disconnect', () => {
       $partnerMessages.innerHTML = ''
-      $partner.innerHTML = ''
+      $partner.innerHTML = 'No one!'
       $status.innerHTML = 'Disconnected'
     })
     socket.on('reconnecting', () => {
       $partnerMessages.innerHTML = ''
       $status.innerHTML = 'Reconnecting...'
+    })
+    socket.on('waitingPersonsCount', count => {
+      $watingPersonsCount.innerHTML = count
     })
     socket.on('partnerConnect', () => {
       $partnerMessages.innerHTML = ''
@@ -58,9 +69,12 @@
     })
 
     function messageToPartner() {
-      socket.emit('messageToPartner', $input.value)
-      $partnerMessages.innerHTML += `<div>Me: ${$input.value}</div>`
-      $input.value = ''
+      socket.emit('messageToPartner', $input.value, success => {
+        if (success) {
+          $partnerMessages.innerHTML += `<div>Me: ${$input.value}</div>`
+        }
+        $input.value = ''
+      })
     }
 
     function partnerRequest() {
@@ -69,6 +83,10 @@
       $partner.innerHTML = 'Finding...'
       $input.value = ''
     }
+    $messageForm.addEventListener('submit', event => {
+      event.preventDefault()
+      messageToPartner()
+    })
   </script>
 </body>
 </html>
