@@ -20,7 +20,7 @@
     "js-sha256": "^0.9.0",
     "jsonwebtoken": "^8.4.0",
     "modela": "^0.4.0",
-    "mongoose": "^5.3.13",
+    "mongoose": "^5.7.5",
     "nodemon": "^1.18.6",
     "uuid": "^3.3.2"
   }
